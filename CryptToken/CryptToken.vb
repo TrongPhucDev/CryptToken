@@ -46,17 +46,21 @@ Public Class CryptToken
     End Function
 
     Public Shared Function DecryptPrivateKey(ByVal value As String, ByVal privateKey As String) As String
-        Dim bytesToDecrypt = Convert.FromBase64String(value)
-        Dim keyPair As AsymmetricCipherKeyPair
-        Dim decryptEngine = New Pkcs1Encoding(New RsaEngine())
+        Try
+            Dim bytesToDecrypt = Convert.FromBase64String(value)
+            Dim keyPair As AsymmetricCipherKeyPair
+            Dim decryptEngine = New Pkcs1Encoding(New RsaEngine())
 
-        Using txtreader = New StringReader(privateKey)
-            keyPair = CType(New PemReader(txtreader).ReadObject(), AsymmetricCipherKeyPair)
-            decryptEngine.Init(False, keyPair.[Private])
-        End Using
+            Using txtreader = New StringReader(privateKey)
+                keyPair = CType(New PemReader(txtreader).ReadObject(), AsymmetricCipherKeyPair)
+                decryptEngine.Init(False, keyPair.[Private])
+            End Using
 
-        Dim decrypted = Encoding.UTF8.GetString(decryptEngine.ProcessBlock(bytesToDecrypt, 0, bytesToDecrypt.Length))
-        Return decrypted
+            Dim decrypted = Encoding.UTF8.GetString(decryptEngine.ProcessBlock(bytesToDecrypt, 0, bytesToDecrypt.Length))
+            Return decrypted
+        Catch ex As Exception
+
+        End Try
     End Function
 
     Private Sub CryptToken_Load(sender As Object, e As EventArgs) Handles MyBase.Load
